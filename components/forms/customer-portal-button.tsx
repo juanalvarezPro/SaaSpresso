@@ -7,20 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
 interface CustomerPortalButtonProps {
-  userStripeId: string;
+  userMercadoPagoId: string;
 }
 
 export function CustomerPortalButton({
-  userStripeId,
+  userMercadoPagoId,
 }: CustomerPortalButtonProps) {
   let [isPending, startTransition] = useTransition();
-  const generateUserStripeSession = openCustomerPortal.bind(null, userStripeId);
+  const generateUserMercadoPagoSession = openCustomerPortal.bind(null, userMercadoPagoId);
 
-  const stripeSessionAction = () =>
-    startTransition(async () => await generateUserStripeSession());
+  const mercadoPagoSessionAction = () =>
+    startTransition(async () => await generateUserMercadoPagoSession());
 
   return (
-    <Button disabled={isPending} onClick={stripeSessionAction}>
+    <Button disabled={isPending} onClick={mercadoPagoSessionAction}>
       {isPending ? (
         <Icons.spinner className="mr-2 size-4 animate-spin" />
       ) : null}

@@ -3,18 +3,17 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
-import { stripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
 
 export type responseAction = {
   status: "success" | "error";
-  stripeUrl?: string;
+  mercadoPagoUrl?: string;
 };
 
 const billingUrl = absoluteUrl("/dashboard/billing");
 
 export async function openCustomerPortal(
-  userStripeId: string,
+  userMercadoPagoId: string,
 ): Promise<responseAction> {
   let redirectUrl: string = "";
 
@@ -25,16 +24,12 @@ export async function openCustomerPortal(
       throw new Error("Unauthorized");
     }
 
-    if (userStripeId) {
-      const stripeSession = await stripe.billingPortal.sessions.create({
-        customer: userStripeId,
-        return_url: billingUrl,
-      });
-
-      redirectUrl = stripeSession.url as string;
+    if (userMercadoPagoId) {
+      // Redirect to Mercado Pago customer portal
+      redirectUrl = `https://www.mercadopago.com.ar/subscriptions/portal/${userMercadoPagoId}`;
     }
   } catch (error) {
-    throw new Error("Failed to generate user stripe session");
+    throw new Error("Failed to generate user Mercado Pago session");
   }
 
   redirect(redirectUrl);

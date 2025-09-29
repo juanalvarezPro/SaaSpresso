@@ -20,7 +20,7 @@ export const pricingData: SubscriptionPlan[] = [
       monthly: 0,
       yearly: 0,
     },
-    stripeIds: {
+    mercadoPagoIds: {
       monthly: null,
       yearly: null,
     },
@@ -43,9 +43,9 @@ export const pricingData: SubscriptionPlan[] = [
       monthly: 15,
       yearly: 144,
     },
-    stripeIds: {
-      monthly: env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID,
+    mercadoPagoIds: {
+      monthly: env.NEXT_PUBLIC_MERCADOPAGO_PRO_MONTHLY_PLAN_ID,
+      yearly: env.NEXT_PUBLIC_MERCADOPAGO_PRO_YEARLY_PLAN_ID,
     },
   },
   {
@@ -63,9 +63,9 @@ export const pricingData: SubscriptionPlan[] = [
       monthly: 30,
       yearly: 300,
     },
-    stripeIds: {
-      monthly: env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID,
+    mercadoPagoIds: {
+      monthly: env.NEXT_PUBLIC_MERCADOPAGO_BUSINESS_MONTHLY_PLAN_ID,
+      yearly: env.NEXT_PUBLIC_MERCADOPAGO_BUSINESS_YEARLY_PLAN_ID,
     },
   },
 ];

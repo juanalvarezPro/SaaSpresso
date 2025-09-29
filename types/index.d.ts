@@ -53,15 +53,15 @@ export type SubscriptionPlan = {
     monthly: number;
     yearly: number;
   };
-  stripeIds: {
+  mercadoPagoIds: {
     monthly: string | null;
     yearly: string | null;
   };
 };
 
 export type UserSubscriptionPlan = SubscriptionPlan &
-  Pick<User, "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId"> & {
-    stripeCurrentPeriodEnd: number;
+  Pick<User, "mercadoPagoCustomerId" | "mercadoPagoSubscriptionId" | "mercadoPagoPlanId"> & {
+    mercadoPagoCurrentPeriodEnd: number;
     isPaid: boolean;
     interval: "month" | "year" | null;
     isCanceled?: boolean;

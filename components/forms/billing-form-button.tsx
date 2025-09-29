@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { generateUserStripe } from "@/actions/generate-user-stripe";
+import { generateUserMercadoPago } from "@/actions/generate-user-mercadopago";
 import { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
 
 import { Button } from "@/components/ui/button";
@@ -19,17 +19,17 @@ export function BillingFormButton({
   subscriptionPlan,
 }: BillingFormButtonProps) {
   let [isPending, startTransition] = useTransition();
-  const generateUserStripeSession = generateUserStripe.bind(
+  const generateUserMercadoPagoSession = generateUserMercadoPago.bind(
     null,
-    offer.stripeIds[year ? "yearly" : "monthly"],
+    offer.mercadoPagoIds[year ? "yearly" : "monthly"],
   );
 
-  const stripeSessionAction = () =>
-    startTransition(async () => await generateUserStripeSession());
+  const mercadoPagoSessionAction = () =>
+    startTransition(async () => await generateUserMercadoPagoSession());
 
   const userOffer =
-    subscriptionPlan.stripePriceId ===
-    offer.stripeIds[year ? "yearly" : "monthly"];
+    subscriptionPlan.mercadoPagoPlanId ===
+    offer.mercadoPagoIds[year ? "yearly" : "monthly"];
 
   return (
     <Button
@@ -37,7 +37,7 @@ export function BillingFormButton({
       rounded="full"
       className="w-full"
       disabled={isPending}
-      onClick={stripeSessionAction}
+      onClick={mercadoPagoSessionAction}
     >
       {isPending ? (
         <>
