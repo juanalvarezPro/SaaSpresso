@@ -49,7 +49,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
       >
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-1.5">
-            <Icons.logo />
+            <Icons.coffee />
             <span className="font-urban text-xl font-bold">
               {siteConfig.name}
             </span>
@@ -111,7 +111,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                 size="sm"
                 rounded="full"
               >
-                <span>Dashboard</span>
+                  <span>Dashboard</span>
               </Button>
             </Link>
           ) : status === "unauthenticated" ? (
@@ -122,7 +122,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               rounded="full"
               onClick={() => setShowSignInModal(true)}
             >
-              <span>Sign In</span>
+              <span>Iniciar sesión</span>
               <Icons.arrowRight className="size-4" />
             </Button>
           ) : (
