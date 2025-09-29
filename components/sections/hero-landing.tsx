@@ -24,7 +24,7 @@ export default function HeroLanding() {
 
         <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-[66px]">
           Desarrolla tu SaaS con el{" "}
-          <span className="text-gradient_indigo-purple font-extrabold">
+          <span className="text-gradient_indigo-green font-extrabold">
             aroma del éxito
           </span>
         </h1>

@@ -125,7 +125,7 @@ const CategoryLink = ({
           className={cn(
             "-mb-px border-b-2 border-transparent font-medium text-muted-foreground hover:text-foreground",
             {
-              "border-purple-600 text-foreground dark:border-purple-400/80":
+              "border-green-600 text-foreground dark:border-green-400/80":
                 active,
             },
           )}
