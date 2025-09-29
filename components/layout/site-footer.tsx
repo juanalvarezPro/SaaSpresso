@@ -42,16 +42,15 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             Copyright &copy; 2024. All rights reserved.
           </span> */}
           <p className="text-left text-sm text-muted-foreground">
-            Built by{" "}
+            Inspirado por{" "}
             <Link
-              href={siteConfig.links.twitter}
+              href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
-              juanalvarezpro
-            </Link>
-            . Hosted on{" "}
+              @mickasmt  </Link>
+            . Alojado en{" "}
             <Link
               href="https://vercel.com"
               target="_blank"
@@ -60,7 +59,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             >
               Vercel
             </Link>
-            . Illustrations by{" "}
+            . Ilustraciones por{" "}
             <Link
               href="https://popsy.co"
               target="_blank"
