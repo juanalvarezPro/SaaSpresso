@@ -4,14 +4,14 @@ export const BLOG_CATEGORIES: {
   description: string;
 }[] = [
   {
-    title: "News",
+    title: "Nuevas",
     slug: "news",
-    description: "Updates and announcements from Next SaaS Starter.",
+    description: "Actualizaciones y anuncios",
   },
   {
-    title: "Education",
+    title: "Educacion",
     slug: "education",
-    description: "Educational content about SaaS management.",
+    description: "Contenido educativo",
   },
 ];
 
