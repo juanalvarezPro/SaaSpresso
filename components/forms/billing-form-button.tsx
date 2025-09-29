@@ -21,7 +21,7 @@ export function BillingFormButton({
   let [isPending, startTransition] = useTransition();
   const generateUserMercadoPagoSession = generateUserMercadoPago.bind(
     null,
-    offer.mercadoPagoIds[year ? "anual" : "mensual"],
+    offer.mercadoPagoIds[year ? "yearly" : "monthly"],
   );
 
   const mercadoPagoSessionAction = () =>
@@ -29,7 +29,7 @@ export function BillingFormButton({
 
   const userOffer =
     subscriptionPlan.mercadoPagoPlanId ===
-      offer.mercadoPagoIds[year ? "anual" : "mensual"];
+    offer.mercadoPagoIds[year ? "yearly" : "monthly"];
 
   return (
     <Button
