@@ -1,27 +1,11 @@
 import Link from "next/link";
 
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
-import { cn, nFormatter } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 
-export default async function HeroLanding() {
-  const { stargazers_count: stars } = await fetch(
-    "https://api.github.com/repos/juanalvarezpro/next-saas-mercadopago-starter",
-    {
-      ...(env.GITHUB_OAUTH_TOKEN && {
-        headers: {
-          Authorization: `Bearer ${process.env.GITHUB_OAUTH_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }),
-      // data will revalidate every hour
-      next: { revalidate: 3600 },
-    },
-  )
-    .then((res) => res.json())
-    .catch((e) => console.log(e));
+export default function HeroLanding() {
 
   return (
     <section className="space-y-6 py-12 sm:py-20 lg:py-20">
@@ -84,8 +68,7 @@ export default async function HeroLanding() {
           >
             <Icons.gitHub className="mr-2 size-4" />
             <p>
-              <span className="hidden sm:inline-block">Star on</span> GitHub{" "}
-              <span className="font-semibold">{nFormatter(stars)}</span>
+              <span className="hidden sm:inline-block">Star on</span> GitHub
             </p>
           </Link>
         </div>
