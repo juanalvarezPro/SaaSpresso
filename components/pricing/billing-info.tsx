@@ -31,9 +31,9 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Subscription Plan</CardTitle>
+        <CardTitle> Plan de Suscripción</CardTitle>
         <CardDescription>
-          You are currently on the <strong>{title}</strong> plan.
+          Actualmente estás en el plan <strong>{title}</strong>.
         </CardDescription>
       </CardHeader>
       <CardContent>{description}</CardContent>
@@ -41,8 +41,8 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
         {isPaid ? (
           <p className="text-sm font-medium text-muted-foreground">
             {isCanceled
-              ? "Your plan will be canceled on "
-              : "Your plan renews on "}
+              ? "Tu plan será cancelado el "
+              : "Tu plan se renovará el "}
             {formatDate(mercadoPagoCurrentPeriodEnd)}.
           </p>
         ) : null}
@@ -51,7 +51,7 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
           <CustomerPortalButton userMercadoPagoId={mercadoPagoCustomerId} />
         ) : (
           <Link href="/pricing" className={cn(buttonVariants())}>
-            Choose a plan
+            Elegir un plan
           </Link>
         )}
       </CardFooter>
