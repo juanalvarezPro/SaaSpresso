@@ -1,13 +1,21 @@
 #!/usr/bin/env tsx
 
-import { createMercadoPagoPlansManager } from '../lib/mercadopago-plans';
+
 import { STANDARD_PLANS_CONFIG } from '../lib/mercadopago-plans-constants';
+import { MercadoPagoPlansManager } from "@/lib/mercadopago-plans";
+import { config } from "dotenv";
+
+config();
 
 async function createStandardPlans() {
   console.log('🚀 Creando planes estándar de SaaS...\n');
   
   try {
-    const plansManager = createMercadoPagoPlansManager();
+    const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!accessToken) {
+      throw new Error("MERCADOPAGO_ACCESS_TOKEN environment variable is required");
+    }
+    const plansManager = new MercadoPagoPlansManager(accessToken);
     
     console.log(`📋 Configuración:`);
     console.log(`   Moneda: ${STANDARD_PLANS_CONFIG.currency}`);
@@ -95,8 +103,13 @@ Parámetros:
   console.log(`🚀 Creando plan personalizado: ${planName}\n`);
   
   try {
-    const plansManager = createMercadoPagoPlansManager();
+    const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!accessToken) {
+      throw new Error("MERCADOPAGO_ACCESS_TOKEN environment variable is required");
+    }
+    const plansManager = (new MercadoPagoPlansManager(accessToken));
     
+
     const planData = {
       reason: planName,
       auto_recurring: {
@@ -129,9 +142,7 @@ Parámetros:
       console.log(`   ID: ${response.data.id}`);
       console.log(`   Estado: ${response.data.status}`);
       console.log(`\n💡 Tip: Ejecuta "npm run plans:list" para ver todos los planes`);
-    } else {
-      console.error(`❌ Error creando plan: ${response.error}`);
-    }
+    } 
     
   } catch (error) {
     console.error('❌ Error:', error);

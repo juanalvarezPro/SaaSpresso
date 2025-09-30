@@ -1,90 +1,29 @@
-import https from 'https';
-
-export interface MercadoPagoPlan {
-  id?: string;
-  reason: string;
-  auto_recurring: {
-    frequency: number;
-    frequency_type: 'days' | 'months';
-    repetitions: number | null;
-    billing_day: number;
-    billing_day_proportional: boolean;
-    transaction_amount: number;
-    currency_id: 'USD' | 'COP' | 'ARS' | 'BRL' | 'MXN';
-  };
-  payment_methods_allowed: {
-    payment_types: Array<Record<string, any>>;
-    payment_methods: Array<Record<string, any>>;
-  };
-  back_url: string;
-  status?: 'active' | 'paused' | 'cancelled';
-  date_created?: string;
-  last_modified?: string;
-}
-
-export interface PlanResponse {
-  status: number;
-  data: MercadoPagoPlan;
-  error?: string;
-}
-
+import { MercadoPagoConfig, PreApprovalPlan } from "mercadopago";
+import { MercadoPagoPlan, PlanResponse } from '@/types';
+//class to manage mercado pago plans
 export class MercadoPagoPlansManager {
-  private accessToken: string;
-  private baseUrl = 'api.mercadopago.com';
+  private client: MercadoPagoConfig;
+  private preApprovalPlan: PreApprovalPlan;
 
   constructor(accessToken: string) {
-    this.accessToken = accessToken;
+    this.client = new MercadoPagoConfig({
+      accessToken,
+      options: {
+        timeout: 5000,
+      },
+    });
+    this.preApprovalPlan = new PreApprovalPlan(this.client);
   }
 
   /**
-   * Realiza una petición HTTP a la API de MercadoPago
+   * Maneja la respuesta del SDK y la convierte al formato esperado
    */
-  private makeRequest(path: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', data?: any): Promise<PlanResponse> {
-    return new Promise((resolve, reject) => {
-      const postData = data ? JSON.stringify(data) : '';
-      
-      const options = {
-        hostname: this.baseUrl,
-        port: 443,
-        path: path,
-        method: method,
-        headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      };
-
-      const req = https.request(options, (res) => {
-        let responseData = '';
-        
-        res.on('data', (chunk) => {
-          responseData += chunk;
-        });
-        
-        res.on('end', () => {
-          try {
-            const parsedData = JSON.parse(responseData);
-            resolve({ 
-              status: res.statusCode || 500, 
-              data: parsedData,
-              error: res.statusCode && res.statusCode >= 400 ? parsedData.message : undefined
-            });
-          } catch (error) {
-            reject(error);
-          }
-        });
-      });
-
-      req.on('error', (error) => {
-        reject(error);
-      });
-
-      if (postData) {
-        req.write(postData);
-      }
-      req.end();
-    });
+  private handleSDKResponse(response: any): PlanResponse {
+    return {
+      status: response.status || 200,
+      data: response,
+      error: response.status >= 400 ? response.message : undefined
+    };
   }
 
   /**
@@ -93,15 +32,10 @@ export class MercadoPagoPlansManager {
   async createPlan(planData: Omit<MercadoPagoPlan, 'id' | 'status' | 'date_created' | 'last_modified'>): Promise<PlanResponse> {
     try {
       console.log(`Creating plan: ${planData.reason}`);
-      const response = await this.makeRequest('/preapproval_plan', 'POST', planData);
+      const response = await this.preApprovalPlan.create({ body: planData as any });
       
-      if (response.status === 201) {
-        console.log(`✅ Plan created successfully! ID: ${response.data.id}`);
-      } else {
-        console.error(`❌ Error creating plan: ${response.error}`);
-      }
-      
-      return response;
+      console.log(`✅ Plan created successfully! ID: ${response.id}`);
+      return this.handleSDKResponse(response);
     } catch (error) {
       console.error('Error creating plan:', error);
       throw error;
@@ -113,8 +47,8 @@ export class MercadoPagoPlansManager {
    */
   async getPlan(planId: string): Promise<PlanResponse> {
     try {
-      const response = await this.makeRequest(`/preapproval_plan/${planId}`, 'GET');
-      return response;
+      const response = await this.preApprovalPlan.get(planId as any);
+      return this.handleSDKResponse(response);
     } catch (error) {
       console.error('Error getting plan:', error);
       throw error;
@@ -127,15 +61,10 @@ export class MercadoPagoPlansManager {
   async updatePlan(planId: string, planData: Partial<MercadoPagoPlan>): Promise<PlanResponse> {
     try {
       console.log(`Updating plan: ${planId}`);
-      const response = await this.makeRequest(`/preapproval_plan/${planId}`, 'PUT', planData);
+      const response = await this.preApprovalPlan.update({ id: planId, updatePreApprovalPlanRequest: planData } as any);
       
-      if (response.status === 200) {
-        console.log(`✅ Plan updated successfully!`);
-      } else {
-        console.error(`❌ Error updating plan: ${response.error}`);
-      }
-      
-      return response;
+      console.log(`✅ Plan updated successfully!`);
+      return this.handleSDKResponse(response);
     } catch (error) {
       console.error('Error updating plan:', error);
       throw error;
@@ -146,7 +75,7 @@ export class MercadoPagoPlansManager {
    * Pausa un plan (no se pueden crear nuevas suscripciones)
    */
   async pausePlan(planId: string): Promise<PlanResponse> {
-    return this.updatePlan(planId, { status: 'paused' });
+    return this.updatePlan(planId, { status: 'inactive' });
   }
 
   /**
@@ -166,10 +95,10 @@ export class MercadoPagoPlansManager {
   /**
    * Lista todos los planes (requiere implementación de paginación)
    */
-  async listPlans(limit: number = 10, offset: number = 0): Promise<PlanResponse> {
+  async listPlans(limit: number = 10, offset: number = 0): Promise<any> {
     try {
-      const response = await this.makeRequest(`/preapproval_plan?limit=${limit}&offset=${offset}`, 'GET');
-      return response;
+      const response = await this.preApprovalPlan.search({} as any);
+      return response as any;
     } catch (error) {
       console.error('Error listing plans:', error);
       throw error;
@@ -307,13 +236,3 @@ export class MercadoPagoPlansManager {
   }
 }
 
-// Función helper para crear una instancia con el token del .env
-export function createMercadoPagoPlansManager(): MercadoPagoPlansManager {
-  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-  
-  if (!accessToken) {
-    throw new Error('MERCADOPAGO_ACCESS_TOKEN environment variable is required');
-  }
-  
-  return new MercadoPagoPlansManager(accessToken);
-}
