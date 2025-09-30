@@ -75,7 +75,6 @@ model Subscription {
   // Relaciones
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan            Plan               @relation(fields: [planId], references: [id], onDelete: Restrict)
-  payments        Payment[]
 
   @@index([userId])
   @@index([planId])
@@ -84,26 +83,6 @@ model Subscription {
   @@map("subscriptions")
 }
 
-model Payment {
-  id                String        @id @default(cuid())
-  subscriptionId    String
-  mercadoPagoId     String        @unique
-  amount            Int
-  currency          String        @default("COP")
-  status            PaymentStatus @default(PENDING)
-  paymentMethod     String?
-  payerEmail        String?
-  externalReference String?
-  processedAt       DateTime?
-  createdAt         DateTime      @default(now()) @map("created_at")
-  updatedAt         DateTime      @default(now()) @map("updated_at")
-  subscription      Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-
-  @@index([subscriptionId])
-  @@index([mercadoPagoId])
-  @@index([status])
-  @@map("payments")
-}
 
 model VerificationToken {
   identifier String
@@ -128,13 +107,6 @@ enum SubscriptionStatus {
   FAILED
 }
 
-enum PaymentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  CANCELLED
-  REFUNDED
-}
 
 model Plan {
   id          String   @id @default(cuid())
