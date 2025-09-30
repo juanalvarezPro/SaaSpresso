@@ -1,88 +1,62 @@
 import { PlansRow, SubscriptionPlan } from "types";
-import { env } from "@/env.mjs";
+import { prisma } from "@/lib/db";
 
-export const pricingData: SubscriptionPlan[] = [
-  {
-    title: "Basico",
-    description: "Para principiantes",
-    benefits: [
-      "Hasta 100 posts mensuales",
-      "Analiticas y reportes basicos",  
-      "Acceso a templates estandar",
-    ],
-    limitations: [
-      "No acceso prioritario a nuevas caracteristicas.",
-      "Soporte limitado",
-      "No branding personalizado",
-      "Acceso limitado a recursos de negocio.",
-    ],
+// Función para obtener datos de planes desde la base de datos
+export async function getPricingData(): Promise<SubscriptionPlan[]> {
+  const plans = await prisma.plan.findMany({
+    where: { isActive: true },
+    orderBy: { priceMonthly: 'asc' }
+  });
+
+  return plans.map(plan => ({
+    id: plan.id,
+    title: plan.name,
+    description: plan.description || "",
+    benefits: plan.benefits,
+    limitations: plan.limitations,
     prices: {
-      monthly: 0,
-      yearly: 0,
+      monthly: plan.priceMonthly,
+      yearly: plan.priceYearly,
     },
     mercadoPagoPrices: {
-      monthly: 0,
-      yearly: 0,
+      monthly: plan.priceMonthly,
+      yearly: plan.priceYearly,
     },
     mercadoPagoIds: {
-      monthly: null,
-      yearly: null,
+      monthly: plan.id, // Usar el ID del plan como referencia
+      yearly: plan.id,  // Usar el ID del plan como referencia
     },
-  },
-  {
-    title: "Pro",
-    description: "Desbloquea caracteristicas avanzadas",
-    benefits: [
-      "Hasta 500 posts mensuales",
-      "Analiticas y reportes avanzados",
-      "Acceso a templates de negocio",
-      "Soporte prioritario",
-      "Webinars y capacitacion exclusiva.",
-    ],
-    limitations: [
-      "No branding personalizado",
-      "Acceso limitado a recursos de negocio.",
-    ],
+  }));
+}
+
+// Función para obtener un plan específico por ID
+export async function getPlanById(planId: string): Promise<SubscriptionPlan | null> {
+  const plan = await prisma.plan.findUnique({
+    where: { id: planId }
+  });
+
+  if (!plan) return null;
+
+  return {
+    id: plan.id,
+    title: plan.name,
+    description: plan.description || "",
+    benefits: plan.benefits,
+    limitations: plan.limitations,
     prices: {
-      monthly: 60000, // $60,000 COP
-      yearly: 576000, // $576,000 COP (20% descuento: $60,000 * 12 * 0.8)
+      monthly: plan.priceMonthly,
+      yearly: plan.priceYearly,
     },
-    // MercadoPago prices in COP (same as display prices)
     mercadoPagoPrices: {
-      monthly: 60000, // $60,000 COP
-      yearly: 576000, // $576,000 COP (20% descuento)
+      monthly: plan.priceMonthly,
+      yearly: plan.priceYearly,
     },
     mercadoPagoIds: {
-      monthly: env.NEXT_PUBLIC_MERCADOPAGO_PRO_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_MERCADOPAGO_PRO_YEARLY_PLAN_ID,
+      monthly: plan.id,
+      yearly: plan.id,
     },
-  },
-  {
-    title: "Business",
-    description: "Para usuarios avanzados",
-    benefits: [
-      "Sin limite de posts",
-      "Analiticas y reportes en tiempo real",
-      "Acceso a todos los templates, incluyendo branding personalizado",
-      "Soporte 24/7",
-      "Personalized onboarding y gestion de cuenta.",
-    ],
-    limitations: [],
-    prices: {
-      monthly: 120000, // $120,000 COP
-      yearly: 1152000, // $1,152,000 COP (20% descuento: $120,000 * 12 * 0.8)
-    },
-    // MercadoPago prices in COP 
-    mercadoPagoPrices: {
-      monthly: 120000, // $120,000 COP
-      yearly: 1152000, // $1,152,000 COP (20% descuento)
-    },
-    mercadoPagoIds: {
-      monthly: env.NEXT_PUBLIC_MERCADOPAGO_BUSINESS_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_MERCADOPAGO_BUSINESS_YEARLY_PLAN_ID,
-    },
-  },
-];
+  };
+}
 
 export const plansColumns = [
   "starter",
