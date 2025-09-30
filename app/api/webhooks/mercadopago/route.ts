@@ -1,13 +1,17 @@
+"use server";
 import { headers } from "next/headers";
-import { prisma } from "@/lib/db";
-import { env } from "@/env.mjs";
 
 export async function POST(req: Request) {
+  console.log("=== MercadoPago Webhook Received ===");
   const body = await req.text();
   const signature = headers().get("x-signature") as string;
 
-  // Verify webhook signature (Mercado Pago uses x-signature header)
+  console.log("Headers:", Object.fromEntries(headers().entries()));
+  console.log("Body:", body);
+
+  // Verify webhook signature
   if (!signature) {
+    console.log("Missing signature");
     return new Response("Missing signature", { status: 400 });
   }
 
@@ -15,78 +19,21 @@ export async function POST(req: Request) {
 
   try {
     event = JSON.parse(body);
+    console.log("Parsed event:", event);
   } catch (error) {
+    console.log("JSON parse error:", error);
     return new Response(`Invalid JSON: ${error.message}`, { status: 400 });
   }
 
-  // Handle different Mercado Pago webhook events
-  switch (event.type) {
-    case "payment":
-      await handlePaymentEvent(event.data);
-      break;
-    case "subscription":
-      await handleSubscriptionEvent(event.data);
-      break;
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+  // Log the event type/topic for debugging
+  if (event.topic) {
+    console.log(`Event topic: ${event.topic}`);
+  } else if (event.type) {
+    console.log(`Event type: ${event.type}`);
+  } else {
+    console.log("Unknown event format:", event);
   }
 
-  return new Response(null, { status: 200 });
-}
-
-async function handlePaymentEvent(data: any) {
-  // Handle payment events (one-time payments, subscription payments)
-  const paymentId = data.id;
-  
-  try {
-    // Fetch payment details from Mercado Pago API if needed
-    // For now, we'll handle subscription-related payments
-    if (data.metadata?.userId && data.metadata?.planId) {
-      // This is a subscription payment
-      await prisma.user.update({
-        where: {
-          id: data.metadata.userId,
-        },
-        data: {
-          mercadoPagoCustomerId: data.payer?.id?.toString(),
-          mercadoPagoPlanId: data.metadata.planId,
-          mercadoPagoCurrentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        },
-      });
-    }
-  } catch (error) {
-    console.error("Error handling payment event:", error);
-  }
-}
-
-async function handleSubscriptionEvent(data: any) {
-  // Handle subscription events (creation, updates, cancellations)
-  const subscriptionId = data.id;
-  
-  try {
-    // Update user subscription based on the event
-    if (data.status === "active") {
-      await prisma.user.update({
-        where: {
-          mercadoPagoSubscriptionId: subscriptionId,
-        },
-        data: {
-          mercadoPagoCurrentPeriodEnd: new Date(data.current_period_end * 1000),
-        },
-      });
-    } else if (data.status === "cancelled") {
-      await prisma.user.update({
-        where: {
-          mercadoPagoSubscriptionId: subscriptionId,
-        },
-        data: {
-          mercadoPagoSubscriptionId: null,
-          mercadoPagoPlanId: null,
-          mercadoPagoCurrentPeriodEnd: null,
-        },
-      });
-    }
-  } catch (error) {
-    console.error("Error handling subscription event:", error);
-  }
+  console.log("=== Webhook processed successfully ===");
+  return new Response("OK", { status: 200 });
 }
