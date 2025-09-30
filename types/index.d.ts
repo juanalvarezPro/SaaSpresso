@@ -45,6 +45,7 @@ export type DocsConfig = {
 
 // subcriptions
 export type SubscriptionPlan = {
+  id?: string;
   title: string;
   description: string;
   benefits: string[];
@@ -63,13 +64,20 @@ export type SubscriptionPlan = {
   };
 };
 
-export type UserSubscriptionPlan = SubscriptionPlan &
-  Pick<User, "mercadoPagoCustomerId" | "mercadoPagoSubscriptionId" | "mercadoPagoPlanId"> & {
-    mercadoPagoCurrentPeriodEnd: number;
-    isPaid: boolean;
-    interval: "month" | "year" | null;
-    isCanceled?: boolean;
+export type UserSubscriptionPlan = SubscriptionPlan & {
+  mercadoPagoCurrentPeriodEnd: number;
+  isPaid: boolean;
+  interval: "month" | "year" | null;
+  isCanceled?: boolean;
+  activeSubscription?: {
+    id: string;
+    mercadoPagoId: string;
+    planId: string;
+    planName: string;
+    status: string;
+    nextBillingDate: Date | null;
   };
+};
 
 // compare plans
 export type ColumnType = string | boolean | null;
