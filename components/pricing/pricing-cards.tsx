@@ -5,29 +5,28 @@ import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
 
 import { SubscriptionPlan } from "@/types/index";
-import { pricingData } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
-import { HeaderSection } from "@/components/shared/header-section";
 import { Icons } from "@/components/shared/icons";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface PricingCardsProps {
+  pricingData: SubscriptionPlan[];
   userId?: string;
   subscriptionPlan?: UserSubscriptionPlan;
 }
 
-export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
+export function PricingCards({ pricingData, userId, subscriptionPlan }: PricingCardsProps) {
   const isYearlyDefault =
-    !subscriptionPlan?.mercadoPagoCustomerId || subscriptionPlan.interval === "year"
+    !subscriptionPlan?.activeSubscription || subscriptionPlan.interval === "year"
       ? true
       : false;
   const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);
   const { setShowSignInModal } = useContext(ModalContext);
 
+ 
   const toggleBilling = () => {
     setIsYearly(!isYearly);
   };
@@ -100,7 +99,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           </ul>
 
           {userId && subscriptionPlan ? (
-            offer.title === "Starter" ? (
+            offer.title === "Basico" ? (
               <Link
                 href="/dashboard"
                 className={cn(
@@ -111,7 +110,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                   "w-full",
                 )}
               >
-                Go to dashboard
+                Ir al Dashboard
               </Link>
             ) : (
               <BillingFormButton
@@ -139,11 +138,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
   };
 
   return (
-    <MaxWidthWrapper>
-      <section className="flex flex-col items-center text-center">
-        <HeaderSection label="Precios" title="Conoce nuestros planes" />
-
-        <div className="mb-4 mt-10 flex items-center gap-5">
+    <>
+      <div className="mb-4 mt-10 flex items-center gap-5">
           <ToggleGroup
             type="single"
             size="sm"
@@ -189,7 +185,6 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
             Puedes probar las suscripciones y no serás cargado.
           </strong>
         </p>
-      </section>
-    </MaxWidthWrapper>
+    </>
   );
 }
