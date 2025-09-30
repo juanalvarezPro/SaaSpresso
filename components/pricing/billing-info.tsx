@@ -22,10 +22,10 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
   const {
     title,
     description,
-    mercadoPagoCustomerId,
     isPaid,
     isCanceled,
     mercadoPagoCurrentPeriodEnd,
+    activeSubscription,
   } = userSubscriptionPlan;
 
   return (
@@ -47,8 +47,8 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
           </p>
         ) : null}
 
-        {isPaid && mercadoPagoCustomerId ? (
-          <CustomerPortalButton userMercadoPagoId={mercadoPagoCustomerId} />
+        {isPaid && activeSubscription?.mercadoPagoId ? (
+          <CustomerPortalButton userMercadoPagoId={activeSubscription.mercadoPagoId} />
         ) : (
           <Link href="/pricing" className={cn(buttonVariants())}>
             Elegir un plan

@@ -21,15 +21,17 @@ export function BillingFormButton({
   let [isPending, startTransition] = useTransition();
   const generateUserMercadoPagoSession = generateUserMercadoPago.bind(
     null,
-    offer.mercadoPagoIds[year ? "yearly" : "monthly"],
+    offer.id, // Usar el ID del plan de la base de datos
+    year, // Pasar si es anual o mensual
   );
 
   const mercadoPagoSessionAction = () =>
     startTransition(async () => await generateUserMercadoPagoSession());
 
-  const userOffer =
-    subscriptionPlan.mercadoPagoPlanId ===
-    offer.mercadoPagoIds[year ? "yearly" : "monthly"];
+  // Verificar si el usuario ya tiene este plan activo
+  const userOffer = subscriptionPlan.activeSubscription?.planId === offer.id;
+  const hasActiveSubscription = subscriptionPlan.isPaid;
+  const isUpgrade = hasActiveSubscription && !userOffer;
 
   return (
     <Button
@@ -44,7 +46,7 @@ export function BillingFormButton({
           <Icons.spinner className="mr-2 size-4 animate-spin" /> Loading...
         </>
       ) : (
-        <>{userOffer ? "Gestionar Suscripción" : "Actualizar"}</>
+        <>{userOffer ? "Gestionar Suscripción" : isUpgrade ? "Cambiar Plan" : "Suscribirse"}</>
       )}
     </Button>
   );
