@@ -31,20 +31,9 @@ export default async function BillingPage() {
       />
       <div className="grid gap-8">
         <Alert className="!pl-14">
-          <Icons.warning />
-          <AlertTitle>This is a demo app.</AlertTitle>
-          <AlertDescription className="text-balance">
-            SaaS Starter app is a demo app using a Mercado Pago test environment. You
-            can find a list of test card numbers on the{" "}
-            <a
-              href="https://www.mercadopago.com.ar/developers/es/docs/testing/test-cards"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-8"
-            >
-              Mercado Pago docs
-            </a>
-            .
+          <AlertTitle>Notificación de prueba</AlertTitle>
+          <AlertDescription>
+            Este es un mensaje de prueba para verificar que la integración de Mercado Pago está funcionando correctamente.
           </AlertDescription>
         </Alert>
         <BillingInfo userSubscriptionPlan={userSubscriptionPlan} />

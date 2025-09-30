@@ -26,7 +26,7 @@ export async function openCustomerPortal(
 
     if (userMercadoPagoId) {
       // Redirect to Mercado Pago customer portal
-      redirectUrl = `https://www.mercadopago.com.ar/subscriptions/portal/${userMercadoPagoId}`;
+      redirectUrl = `https://www.mercadopago.com.co/subscriptions/portal/${userMercadoPagoId}`;
     }
   } catch (error) {
     throw new Error("Failed to generate user Mercado Pago session");
