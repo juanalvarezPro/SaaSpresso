@@ -77,3 +77,31 @@ export type PlansRow = { feature: string; tooltip?: string } & {
   [key in (typeof plansColumns)[number]]: ColumnType;
 };
 
+
+export interface MercadoPagoPlan {
+  id?: string;
+  reason: string;
+  auto_recurring: {
+    frequency: number;
+    frequency_type: 'days' | 'months';
+    repetitions: number | null;
+    billing_day: number;
+    billing_day_proportional: boolean;
+    transaction_amount: number;
+    currency_id: 'USD' | 'COP' | 'ARS' | 'BRL' | 'MXN';
+  };
+  payment_methods_allowed: {
+    payment_types: Array<Record<string, any>>;
+    payment_methods: Array<Record<string, any>>;
+  };
+  back_url: string;
+  status?: 'active' | 'paused' | 'cancelled';
+  date_created?: string;
+  last_modified?: string;
+}
+
+export interface PlanResponse {
+  status: number;
+  data: MercadoPagoPlan;
+  error?: string;
+}
