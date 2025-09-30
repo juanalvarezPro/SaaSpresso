@@ -142,6 +142,8 @@ model Plan {
   description String?
   priceMonthly Int     // Precio en centavos
   priceYearly  Int     // Precio en centavos
+  benefits    String[] // Array de beneficios
+  limitations String[] // Array de limitaciones
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @map(name: "updated_at")
