@@ -53,6 +53,10 @@ export type SubscriptionPlan = {
     monthly: number;
     yearly: number;
   };
+  mercadoPagoPrices: {
+    monthly: number;
+    yearly: number;
+  };
   mercadoPagoIds: {
     monthly: string | null;
     yearly: string | null;
