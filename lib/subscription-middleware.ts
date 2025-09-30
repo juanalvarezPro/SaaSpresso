@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 /**
  * Middleware para verificar si un usuario tiene acceso activo
  * Úsalo en páginas protegidas que requieren suscripción
+ * 
+ * NOTA: Este es solo un wrapper del SubscriptionVerificationService
+ * La lógica real está en el service (Single Source of Truth)
  */
 export async function requireActiveSubscription(userId: string) {
   const hasAccess = await SubscriptionVerificationService.hasActiveAccess(userId);
@@ -17,40 +20,23 @@ export async function requireActiveSubscription(userId: string) {
 }
 
 /**
- * Obtiene la información de suscripción activa del usuario
- * Úsalo para mostrar información del plan actual
+ * Verifica si el usuario tiene acceso y retorna la información
+ * Úsalo en componentes que necesitan verificar acceso
+ * 
+ * NOTA: Este es solo un wrapper del SubscriptionVerificationService
+ * La lógica real está en el service (Single Source of Truth)
  */
-export async function getActiveSubscriptionInfo(userId: string) {
-  const subscription = await SubscriptionVerificationService.getActiveSubscription(userId);
-  
-  if (!subscription) {
-    return null;
-  }
-  
-  return {
-    id: subscription.id,
-    amount: subscription.amount,
-    currency: subscription.currency,
-    status: subscription.status,
-    startDate: subscription.startDate,
-    endDate: subscription.endDate,
-    nextBillingDate: subscription.nextBillingDate,
-    frequency: subscription.frequency,
-    frequencyType: subscription.frequencyType,
-    lastPayment: subscription.payments[0] // Último pago aprobado
-  };
+export async function checkSubscriptionAccess(userId: string) {
+  return await SubscriptionVerificationService.checkAccessAndGetSubscription(userId);
 }
 
 /**
- * Verifica si el usuario tiene acceso y retorna la información
- * Úsalo en componentes que necesitan verificar acceso
+ * Obtiene información formateada de la suscripción
+ * Úsalo en componentes que necesitan datos específicos
+ * 
+ * NOTA: Este es solo un wrapper del SubscriptionVerificationService
+ * La lógica real está en el service (Single Source of Truth)
  */
-export async function checkSubscriptionAccess(userId: string) {
-  const hasAccess = await SubscriptionVerificationService.hasActiveAccess(userId);
-  const subscriptionInfo = hasAccess ? await getActiveSubscriptionInfo(userId) : null;
-  
-  return {
-    hasAccess,
-    subscription: subscriptionInfo
-  };
+export async function getSubscriptionInfo(userId: string) {
+  return await SubscriptionVerificationService.getFormattedSubscriptionInfo(userId);
 }
