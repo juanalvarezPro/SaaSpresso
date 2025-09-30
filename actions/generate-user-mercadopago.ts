@@ -32,7 +32,7 @@ export async function generateUserMercadoPago(planId: string, isYearly: boolean 
 
     // Si ya tiene suscripción activa, verificar si es el mismo plan
     if (subscriptionPlan.isPaid && subscriptionPlan.activeSubscription?.planId === planId) {
-      redirect(`https://www.mercadopago.com.co/subscriptions`);
+      redirect(`https://www.mercadopago.com.co/subscriptions/details/${subscriptionPlan.activeSubscription?.mercadoPagoId}`);
     }
 
     // Buscar detalles del plan en la base de datos
