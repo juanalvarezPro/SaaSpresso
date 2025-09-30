@@ -95,7 +95,7 @@ export interface MercadoPagoPlan {
     payment_methods: Array<Record<string, any>>;
   };
   back_url: string;
-  status?: 'active' | 'paused' | 'cancelled';
+  status?: 'active' | 'inactive' | 'cancelled';
   date_created?: string;
   last_modified?: string;
 }
