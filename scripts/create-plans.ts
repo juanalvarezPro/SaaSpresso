@@ -79,14 +79,14 @@ Uso: npm run plans:create <nombre> <monto> [moneda] [frecuencia] [tipo_frecuenci
 Ejemplos:
   npm run plans:create "Plan Premium" 50 USD 1 months 12
   npm run plans:create "Plan Básico" 10 USD 1 months
-  npm run plans:create "Plan Semanal" 5 USD 1 weeks
+  npm run plans:create "Plan Diario" 5 USD 7 days
 
 Parámetros:
   nombre           - Nombre del plan (requerido)
   monto           - Monto del plan (requerido)
   moneda          - Moneda (USD, COP, ARS, etc.) - default: USD
   frecuencia      - Cada cuántos períodos - default: 1
-  tipo_frecuencia - days, weeks, months - default: months
+  tipo_frecuencia - days, months - default: months
   repeticiones    - Número de repeticiones (null = ilimitado) - default: null
 `);
     return;
@@ -101,7 +101,7 @@ Parámetros:
       reason: planName,
       auto_recurring: {
         frequency,
-        frequency_type: frequencyType as 'days' | 'weeks' | 'months',
+        frequency_type: frequencyType as 'days' | 'months',
         repetitions,
         billing_day: 1,
         billing_day_proportional: false,
