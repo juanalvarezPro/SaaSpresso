@@ -20,6 +20,10 @@ export const pricingData: SubscriptionPlan[] = [
       monthly: 0,
       yearly: 0,
     },
+    mercadoPagoPrices: {
+      monthly: 0,
+      yearly: 0,
+    },
     mercadoPagoIds: {
       monthly: null,
       yearly: null,
@@ -40,8 +44,13 @@ export const pricingData: SubscriptionPlan[] = [
       "Acceso limitado a recursos de negocio.",
     ],
     prices: {
-      monthly: 15,
-      yearly: 144,
+      monthly: 60000, // $60,000 COP
+      yearly: 576000, // $576,000 COP (20% descuento: $60,000 * 12 * 0.8)
+    },
+    // MercadoPago prices in COP (same as display prices)
+    mercadoPagoPrices: {
+      monthly: 60000, // $60,000 COP
+      yearly: 576000, // $576,000 COP (20% descuento)
     },
     mercadoPagoIds: {
       monthly: env.NEXT_PUBLIC_MERCADOPAGO_PRO_MONTHLY_PLAN_ID,
@@ -60,8 +69,13 @@ export const pricingData: SubscriptionPlan[] = [
     ],
     limitations: [],
     prices: {
-      monthly: 30,
-      yearly: 300,
+      monthly: 120000, // $120,000 COP
+      yearly: 1152000, // $1,152,000 COP (20% descuento: $120,000 * 12 * 0.8)
+    },
+    // MercadoPago prices in COP 
+    mercadoPagoPrices: {
+      monthly: 120000, // $120,000 COP
+      yearly: 1152000, // $1,152,000 COP (20% descuento)
     },
     mercadoPagoIds: {
       monthly: env.NEXT_PUBLIC_MERCADOPAGO_BUSINESS_MONTHLY_PLAN_ID,
@@ -161,3 +175,4 @@ export const comparePlans: PlansRow[] = [
   },
   // Add more rows as needed
 ];
+
