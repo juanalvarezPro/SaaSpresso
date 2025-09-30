@@ -54,12 +54,12 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
                 {isYearly && offer.prices.monthly > 0 ? (
                   <>
                     <span className="mr-2 text-muted-foreground/80 line-through">
-                      ${offer.prices.monthly}
+                      ${offer.prices.monthly.toLocaleString()}
                     </span>
-                    <span>${offer.prices.yearly / 12}</span>
+                    <span>${Math.round(offer.prices.yearly / 12).toLocaleString()}</span>
                   </>
                 ) : (
-                  `$${offer.prices.monthly}`
+                  `$${offer.prices.monthly.toLocaleString()}`
                 )}
               </div>
               <div className="-mb-1 ml-2 text-left text-sm font-medium text-muted-foreground">
@@ -67,13 +67,15 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
               </div>
             </div>
           </div>
-          {offer.prices.monthly > 0 ? (
-            <div className="text-left text-sm text-muted-foreground">
-              {isYearly
-                ? `$${offer.prices.yearly} sera cargado cuando sea anual`
-                : "cuando sea mensual"}
-            </div>
-          ) : null}
+              {offer.prices.monthly > 0 ? (
+                <div className="text-left text-sm text-muted-foreground">
+                  {isYearly
+                    ? `$${offer.prices.yearly.toLocaleString()} será cargado cuando sea anual`
+                    : `$${offer.prices.monthly.toLocaleString()} será cargado cuando sea mensual`}
+                  <br />
+                  <span className="text-xs">*Precios en pesos colombianos (COP)</span>
+                </div>
+              ) : null}
         </div>
 
         <div className="flex h-full flex-col justify-between gap-16 p-6">
