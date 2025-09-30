@@ -1,18 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-}
-
-enum UserRole {
-  ADMIN
-  USER
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -21,21 +13,20 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?  @db.Text
-  access_token      String?  @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?  @db.Text
+  id_token          String?
   session_state     String?
-  createdAt         DateTime @default(now()) @map(name: "created_at")
-  updatedAt         DateTime @default(now()) @map(name: "updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @map("updated_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
-  @@map(name: "accounts")
+  @@map("accounts")
 }
 
 model Session {
@@ -46,28 +37,72 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@map(name: "sessions")
+  @@map("sessions")
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
-  role          UserRole  @default(USER)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @map("updated_at")
+  role          UserRole       @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  subscriptions Subscription[]
 
-  accounts Account[]
-  sessions Session[]
+  @@map("users")
+}
 
-  mercadoPagoCustomerId       String?   @unique @map(name: "mercadopago_customer_id")
-  mercadoPagoSubscriptionId   String?   @unique @map(name: "mercadopago_subscription_id")
-  mercadoPagoPlanId           String?   @map(name: "mercadopago_plan_id")
-  mercadoPagoCurrentPeriodEnd DateTime? @map(name: "mercadopago_current_period_end")
+model Subscription {
+  id              String             @id @default(cuid())
+  userId          String
+  planId          String             // ID del plan en la tabla plans
+  mercadoPagoId   String             @unique
+  status          SubscriptionStatus @default(PENDING)
+  amount          Int
+  currency        String             @default("COP")
+  frequency       Int
+  frequencyType   String             @default("months")
+  startDate       DateTime?
+  endDate         DateTime?
+  nextBillingDate DateTime?
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @default(now()) @map("updated_at")
+  
+  // Relaciones
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            Plan               @relation(fields: [planId], references: [id], onDelete: Restrict)
+  payments        Payment[]
 
-  @@map(name: "users")
+  @@index([userId])
+  @@index([planId])
+  @@index([mercadoPagoId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  subscriptionId    String
+  mercadoPagoId     String        @unique
+  amount            Int
+  currency          String        @default("COP")
+  status            PaymentStatus @default(PENDING)
+  paymentMethod     String?
+  payerEmail        String?
+  externalReference String?
+  processedAt       DateTime?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @default(now()) @map("updated_at")
+  subscription      Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([mercadoPagoId])
+  @@index([status])
+  @@map("payments")
 }
 
 model VerificationToken {
@@ -76,5 +111,44 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map(name: "verification_tokens")
+  @@map("verification_tokens")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  CANCELLED
+  EXPIRED
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  REFUNDED
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique // "Pro", "Business", etc.
+  description String?
+  priceMonthly Int     // Precio en centavos
+  priceYearly  Int     // Precio en centavos
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+
+  // Relaciones
+  subscriptions Subscription[]
+
+  @@index([isActive])
+  @@map(name: "plans")
 }
